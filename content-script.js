@@ -59,6 +59,8 @@ const process = async (items) => {
 
 const scrollToBottom = async (event) => {
     document.scrollingElement.scrollBy(0, document.scrollingElement.scrollHeight)
+    const sleep = time => new Promise(res => setTimeout(res, time, "done sleeping"));
+    await sleep(1000);
 };
 
 const start = () => {
@@ -85,3 +87,16 @@ chrome.runtime.onMessage.addListener(handleFromBackground);
         window.dispatchEvent(new Event('scroll'));
     }, storage.ts.interval);
 })();
+
+
+if (! _started) {
+    new Promise((resolve) => {
+        intervalId = setInterval(() => {
+            if (document.domain.endsWith("tiktok.com") && document.readyState=="complete") {
+                start();
+                clearInterval(intervalId);
+                resolve();
+            }
+        }, 1000);
+    });
+}
